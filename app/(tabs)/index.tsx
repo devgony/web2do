@@ -15,5 +15,28 @@ export default function HomeScreen() {
         </h2>
      </body>`;
 
-  return <WebView source={{ html: customHTML }} />;
+  const runFirst = `
+      setTimeout(function() { 
+          window.alert("Click me!");
+          document.getElementById("h1_element").innerHTML = 
+          "What is your favourite language?";
+          document.getElementById("h2_element").innerHTML =
+          "We will see!";
+        }, 1000);
+      true; // note: this is required, or you'll sometimes get silent failures
+    `;
+
+  const runBeforeFirst = `
+      window.isNativeApp = true;
+      true; // note: this is required, or you'll sometimes get silent failures
+  `;
+
+  return (
+    <WebView
+      source={{ html: customHTML }}
+      onMessage={(event) => {}}
+      injectedJavaScript={runFirst}
+      injectedJavaScriptBeforeContentLoaded={runBeforeFirst}
+    />
+  );
 }
