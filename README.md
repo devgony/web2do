@@ -140,3 +140,46 @@ window.ReactNativeWebView.postMessage("counter: ${counter}");
 - `onNavigationStateChange`: is invoked whenever the `WebView` loading starts and ends
 
 - `onShouldStartLoadWithRequest`: restricts navigation
+
+## WebView customization techniques in React Native
+
+- Custom style -> does not work.
+
+```ts
+const injectedJavaScript = `
+    const style = document.createElement('style');
+    style.innerHTML = 'body { background-color: grey; }';
+    document.head.appendChild(style);
+    true;
+  `;
+
+  return (
+    <WebView
+      source={{ uri: "https://blog.logrocket.com/" }}
+      injectedJavaScript={injectedJavaScript}
+    />
+  );
+```
+
+- handle loading -> does not work
+
+```ts
+export default function HomeScreen() = () => {
+  const [error, setError] = useState(null);
+
+  return (
+    <>
+      {error ? (
+        <Error errorMessage={error.message} />
+      ) : (
+        <WebView
+          source={{ uri: "https://blog.logrocket.com/" }}
+          onError={(error) => setError(error)}
+          startInLoadingState={true}
+          renderLoading={() => <ActivityIndicator size="large" />}
+        />
+      )}
+    </>
+  );
+};
+```
