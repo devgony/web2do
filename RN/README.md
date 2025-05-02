@@ -183,3 +183,36 @@ export default function HomeScreen() = () => {
   );
 };
 ```
+
+## SafeArea 처리하기
+
+### 1. SafeAreaView
+
+```ts
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
+
+export default function MyWebView() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <WebView source={{ uri: 'https://example.com' }} style={styles.webview} />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
+  webview: {
+    flex: 1
+  }
+});
+```
+
+#### 단점
+
+- RN 의 style 은 oklch 를 지원하지 않음
+- notch 를 동일한 색상으로 채워도 최상단에서 위로 스크롤 했을 때 깨져보임
