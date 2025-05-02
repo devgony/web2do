@@ -1,50 +1,117 @@
-# Welcome to your Expo app 👋
+# Web2do
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> Demo for React native + Web view
 
-## Get started
+## Embed web content with `WebView` component
 
-1. Install dependencies
+```ts
+// app/(tabs)/index.jsx
+import { WebView } from 'react-native-webview';
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+export default function HomeScreen() {
+  return <WebView source={{ uri: "https://blog.logrocket.com/" }} />;
+}
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Embed inline HTML
 
-## Learn more
+```ts
+export default function HomeScreen() {
+  const customHTML = `
+    <body style="display:flex; flex-direction: column;justify-content: center;
+      align-items:center; background-color: black; color:white; height: 100%;">
+        <h1 style="font-size:100px; padding: 50px; text-align: center;"
+        id="h1_element">
+          This is simple html
+        </h1>
+        <h2 style="display: block; font-size:80px; padding: 50px;
+        text-align: center;" id="h2_element">
+          This text will be changed later!
+        </h2>
+     </body>`;
 
-To learn more about developing your project with Expo, look at the following resources:
+  return <WebView source={{ html: customHTML }} />;
+}
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Communicating between JavaScript and React Native
 
-## Join the community
+```ts
+# app/(tabs)/index.jsx
+import { WebView } from "react-native-webview";
 
-Join our community of developers creating universal apps.
+export default function HomeScreen() {
+  const customHTML = `
+    <body style="display:flex; flex-direction: column;justify-content: center;
+      align-items:center; background-color: black; color:white; height: 100%;">
+        <h1 style="font-size:100px; padding: 50px; text-align: center;"
+        id="h1_element">
+          This is simple html
+        </h1>
+        <h2 style="display: block; font-size:80px; padding: 50px;
+        text-align: center;" id="h2_element">
+          This text will be changed later!
+        </h2>
+     </body>`;
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+  const runFirst = `
+      setTimeout(function() {
+          window.alert("Click me!");
+          document.getElementById("h1_element").innerHTML =
+          "What is your favourite language?";
+          document.getElementById("h2_element").innerHTML =
+          "We will see!";
+        }, 1000);
+      true; // note: this is required, or you'll sometimes get silent failures
+    `;
+
+  const runBeforeFirst = `
+      window.isNativeApp = true;
+      true; // note: this is required, or you'll sometimes get silent failures
+  `;
+
+  return (
+    <WebView
+      source={{ html: customHTML }}
+      onMessage={(event) => {}}
+      injectedJavaScript={runFirst}
+      injectedJavaScriptBeforeContentLoaded={runBeforeFirst}
+    />
+  );
+}
+```
+
+- `injectedJavaScript`: executes once after the resource loads for the first time.
+  - Even if refresh the site, the code will not be executed again.
+- `injectedJavaScriptBeforeContentLoaded`: executes before the page is loaded for the first time.
+  - `runBeforeFirst`: this is required, or you'll sometimes get silent failures
+
+## The injectJavaScript method in React Native WebView
+
+- `onLoad`: executes js after the WebView has fully loaded
+
+```ts
+const onLoadHandler = ({ nativeEvent }: WebViewNavigationEvent) => {
+  if (!nativeEvent.url.startsWith("http")) {
+    webRef?.current?.injectJavaScript(injectedJavaScript);
+  }
+};
+```
+
+- Redirect to web url
+
+```ts
+window.location = "https://blog.logrocket.com";
+```
+
+- `onMessage`: receives messages from the web view. (mandatory)
+
+```ts
+onMessage={(event) => { console.log(event.nativeEvent.data); }}
+```
+
+- `window.ReactNativeWebView.postMessage` sends messages to React Native.
+
+```ts
+window.ReactNativeWebView.postMessage("counter: ${counter}");
+```
