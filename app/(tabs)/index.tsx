@@ -95,6 +95,12 @@ export default function HomeScreen() {
       onLoad={onLoadHandler}
       injectedJavaScript={runFirst}
       injectedJavaScriptBeforeContentLoaded={runBeforeFirst}
+      onNavigationStateChange={(navState) => {
+        console.log(navState);
+      }}
+      // onShouldStartLoadWithRequest={(request) => {
+      //   return request.url.startsWith("https://blog.logrocket.com/");
+      // }}
     />
   );
 }

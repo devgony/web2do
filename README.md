@@ -115,3 +115,28 @@ onMessage={(event) => { console.log(event.nativeEvent.data); }}
 ```ts
 window.ReactNativeWebView.postMessage("counter: ${counter}");
 ```
+
+## Handling navigation and URL changes in React Native WebView
+
+```ts
+<WebView
+  source={{ uri: 'https://blog.logrocket.com/' }}
+  onNavigationStateChange={(navState) => {
+    console.log(navState)
+    // {
+    //   url: string;
+    //   loading: boolean;
+    //   title: string;
+    //   canGoBack: boolean;
+    //   canGoForward: boolean;
+    // }
+  }}
+  onShouldStartLoadWithRequest={(request) => {
+    return request.url.startsWith('https://blog.logrocket.com/');
+  }}
+/>
+```
+
+- `onNavigationStateChange`: is invoked whenever the `WebView` loading starts and ends
+
+- `onShouldStartLoadWithRequest`: restricts navigation
