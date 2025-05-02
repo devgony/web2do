@@ -212,7 +212,40 @@ const styles = StyleSheet.create({
 });
 ```
 
-#### 단점
-
 - RN 의 style 은 oklch 를 지원하지 않음
 - notch 를 동일한 색상으로 채워도 최상단에서 위로 스크롤 했을 때 깨져보임
+
+### 2. viewport 방식
+
+- RN 에서는 SAfeAreaView 를 제거
+- web 에서 viewport 설정
+
+```ts
+// layout.tsx
+..
+<html lang="en">
+    <head>
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+    </head>
+    <body>
+    ..
+```
+
+```css
+/* glocal.css*/
+body {
+  background-color: #f97316;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+```
+
+- 결국은 background-color 별도로 해주어야 한다
+- 스크롤 해도 일관되게 보임
+  - 그래도 최상단 최하단의 스크롤을 막기는 해야할 듯
