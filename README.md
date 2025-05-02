@@ -184,6 +184,8 @@ export default function HomeScreen() = () => {
 };
 ```
 
+- ref: <https://blog.logrocket.com/react-native-webview-complete-guide/>
+
 ## SafeArea 처리하기
 
 ### 1. SafeAreaView
